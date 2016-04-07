@@ -14,7 +14,7 @@ import scala.scalajs.js.annotation.JSName
   */
 @js.native
 @JSName("vg.Scene")
-class Scene extends js.Object {
+class Scene() extends js.Object {
   def this(sceneConfig: SceneConfig, controlConfig: ControlConfig) = this()
   def this(sceneConfig: SceneConfig, controlConfig: Boolean) = this()
 

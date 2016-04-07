@@ -1,8 +1,10 @@
 package vongrid
 
+import org.denigma.threejs.Vector3
+
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
-
+import vongrid.AbstractCell
 /**
   * @author Urs Honegger &ltu.honegger@insign.ch&gt
   */
@@ -14,7 +16,7 @@ trait NodeObject {
 
 @js.native
 @JSName("vg.Cell")
-class Cell(var q: Float, var r: Float, var s: Float, var h: Float) extends js.Object {
+class Cell(var q: Double, var r: Double, var s: Double, var h: Double = 0) extends js.Object {
 
   // optional link to the visual representation's class instance
   var tile: Tile = js.native
@@ -33,9 +35,15 @@ class Cell(var q: Float, var r: Float, var s: Float, var h: Float) extends js.Ob
 
   def set(q: Float, r: Float, s: Float) = js.native
 
-  def copy(cell: Cell): Cell = js.native
+  def copy(cell: Cell) = js.native
 
-  def add(cell: Cell): Cell = js.native
+  def add(cell: Cell) = js.native
 
-  def equals(cell: Cell): Cell = js.native
+  def equals(cell: Cell): Boolean = js.native
 }
+
+
+object ACell {
+  def copy(cell: Cell) = new Cell(0,0,0,0).copy(cell)
+}
+

@@ -12,7 +12,7 @@ import scala.scalajs.js.annotation.JSName
   */
 @js.native
 @JSName("vg.LinkedList")
-class AStarFinder(finderConfig: AStarFinderConfig) extends js.Object {
+class AStarFinder(finderConfig: js.UndefOr[AStarFinderConfig]) extends js.Object {
   var allowDiagonal: Boolean = js.native
   var heuristicFilter: Function[Cell, Cell] = js.native
   var list: LinkedList = js.native

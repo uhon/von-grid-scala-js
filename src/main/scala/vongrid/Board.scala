@@ -13,8 +13,7 @@ import scala.scalajs.js.annotation.JSName
   */
 @js.native
 @JSName("vg.Board")
-class Board(var grid: HexGrid, finderConfig: AStarFinderConfig) extends js.Object {
-  def this(grid: HexGrid) = this(grid, ???)
+class Board(grid: HexGrid, finderConfig: js.UndefOr[AStarFinderConfig] = js.undefined) extends js.Object {
   var tiles: js.Array[Tile] = js.native
   var tileGroup: Object3D = js.native// only for tiles
   var group: Object3D = js.native // can hold all entities, also holds tileGroup, never trashed
