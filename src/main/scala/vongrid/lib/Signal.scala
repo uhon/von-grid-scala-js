@@ -139,7 +139,7 @@ class Signal extends js.Object {
     * @method Signal#dispatch
     * @param {any} [params] - Parameters that should be passed to each handler.
     */
-  def dispatch() = js.native
+  def dispatch(signal: String, objects: js.Object*) = js.native
 
   /**
     * Forget memorized arguments.

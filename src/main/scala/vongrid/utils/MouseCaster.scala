@@ -6,6 +6,7 @@ import org.scalajs.dom.raw.{HTMLElement, MouseEvent, WheelEvent}
 import vongrid.lib.Signal
 
 import scala.scalajs.js
+import scala.scalajs.js.UndefOr
 import scala.scalajs.js.annotation.JSName
 
 /**
@@ -13,8 +14,7 @@ import scala.scalajs.js.annotation.JSName
   */
 @js.native
 @JSName("vg.MouseCaster")
-class MouseCaster(group: Object3D, camera: Camera, element: HTMLElement) extends js.Object {
-  def this(group: Object3D, camera: Camera) = this(group, camera, ???)
+class MouseCaster(group: Object3D, camera: Camera, element: UndefOr[HTMLElement] = js.native) extends js.Object {
   var down: Boolean = js.native // left click
   var rightDown: Boolean = js.native
   // the object that was just clicked on
@@ -41,15 +41,12 @@ class MouseCaster(group: Object3D, camera: Camera, element: HTMLElement) extends
   var _preventDefault: Boolean = js.native
 
 
-  // TODO: What about constructors like this?
-  // def this(group: Object3D = js.native, camera: Camera = js.native, element: HTMLElement = js.native) = this()
-
   def update() = js.native
   def preventDefault() = js.native
-  def _onDocumentMouseDown(evt: MouseEvent) = js.native
-  def _onDocumentMouseUp(evt: MouseEvent) = js.native
-  def _onDocumentMouseMove(evt: MouseEvent) = js.native
-  def _onMouseWheel(evt: WheelEvent) = js.native
+  def _onDocumentMouseDown(evt: MouseEvent): js.Any = js.native
+  def _onDocumentMouseUp(evt: MouseEvent): js.Any = js.native
+  def _onDocumentMouseMove(evt: MouseEvent): js.Any = js.native
+  def _onMouseWheel(evt: WheelEvent): js.Any = js.native
 
 }
 
@@ -61,4 +58,7 @@ object MC {
   var UP = "up"
   var CLICK = "click" // only fires if the user clicked down and up while on the same object
   var WHEEL = "wheel"
+
+  // Specific (not handled by von-grid). // TODO: Remove it or extend MC
+  var DRAG = "drag"
 }

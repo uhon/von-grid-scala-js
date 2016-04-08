@@ -49,8 +49,8 @@ class HexGrid(config: HexGridConfig) extends js.Object {
 
   // grid cell (Hex in cube coordinate space) to position in pixels/world
   def cellToPixel(cell: Cell): Vector3 = js.native
-  def pixelToCell(pos: Vector3): js.UndefOr[Cell] = js.native
-  def getCellAt(pos: Vector3): Option[Cell] = js.native
+  def pixelToCell(pos: Vector3): Cell = js.native
+  def getCellAt(pos: Vector3): js.UndefOr[Cell] = js.native
   @JSName("getNeighbours")
   def getNeighbors(cell: Cell, diagonal: Boolean): js.Array[Cell] = js.native
   @JSName("getNeighbours")
@@ -60,7 +60,7 @@ class HexGrid(config: HexGridConfig) extends js.Object {
   def distance(cellA: Cell, cellB: Cell): Float = js.native
   def clearPath() = js.native
   def traverse(callback: js.Function0[Cell]) = js.native
-  def generateTile(cell: Cell, scale: Float, material: MeshPhongMaterial): Tile = js.native
+  def generateTile(cell: Cell, scale: Double, material: MeshPhongMaterial = null): Tile = js.native
   @JSName("generateTiles")
   def generateTiles(): js.Array[Tile] = js.native
   @JSName("generateTiles")
