@@ -11,7 +11,7 @@ import scala.scalajs.js.annotation.JSName
   * Created by uhon on 27/03/16.
   */
 @js.native
-@JSName("vg.LinkedList")
+@JSName("vg.AStarFinder")
 class AStarFinder(finderConfig: js.UndefOr[AStarFinderConfig]) extends js.Object {
   var allowDiagonal: Boolean = js.native
   var heuristicFilter: Function[Cell, Cell] = js.native

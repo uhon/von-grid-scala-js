@@ -1,9 +1,8 @@
 package vongrid
 
-import org.denigma.threejs.{LineBasicMaterial, Object3D}
-import vongrid.config.{AStarFinderConfig, TileGenConfig}
+import org.denigma.threejs.{LineBasicMaterial, Object3D, Sprite}
+import vongrid.config.{AStarFinderConfig, AbstractSprite, TileGenConfig}
 import vongrid.pathing.AStarFinder
-import vongrid.three.Sprite
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName

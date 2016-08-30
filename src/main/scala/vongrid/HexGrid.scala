@@ -1,7 +1,7 @@
 package vongrid
 
 import org.denigma.threejs._
-import vongrid.config.{HexGridConfig, SimpleTileGenConfig, TileGenConfig}
+import vongrid.config.{ExtrudeSettings, HexGridConfig, SimpleTileGenConfig, TileGenConfig}
 
 import scala.scalajs.js
 import scala.scalajs.js.UndefOr

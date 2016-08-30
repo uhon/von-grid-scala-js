@@ -19,7 +19,8 @@ trait NodeObject {
 class Cell(var q: Double, var r: Double, var s: Double, var h: Double = 0) extends js.Object {
 
   // optional link to the visual representation's class instance
-  var tile: Tile = js.native
+  // we make it protected, so that it cant be changed from others than its children. This allows getter or setter with optional-type on child)
+  protected var tile: Tile = js.native
 
   // if true, pathfinder will use as a through node
   // rest of these are used by the pathfinder and overwritten at runtime, so don't touch

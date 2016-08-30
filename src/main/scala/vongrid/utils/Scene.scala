@@ -16,11 +16,7 @@ import scala.scalajs.js.annotation.JSName
 @JSName("vg.Scene")
 class Scene() extends js.Object {
   def this(sceneConfig: SceneConfig, controlConfig: ControlConfig) = this()
-  def this(sceneConfig: SceneConfig, controlConfig: Boolean) = this()
-
-
-  // control settings
-  var controlSettings: SceneSettings = js.native
+  def this(sceneConfig: SceneConfig, controlled: Boolean) = this()
 
   val renderer: WebGLRenderer = js.native
   var width: Int = js.native
@@ -38,6 +34,7 @@ class Scene() extends js.Object {
   def focusOn(obj: Object3D) = js.native
 }
 
+@js.native
 trait SceneSettings extends js.Object {
   var element: Element = js.native
   var alpha: Boolean = js.native
@@ -52,7 +49,8 @@ trait SceneSettings extends js.Object {
   var orthoZoom:Int = js.native
 }
 
-trait controlSettings extends js.Object {
+@js.native
+trait ControlSettings extends js.Object {
   var minDistance: Int = js.native
   var maxDistance: Int = js.native
   var zoomSpeed: Int = js.native
