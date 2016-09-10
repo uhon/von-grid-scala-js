@@ -34,7 +34,9 @@ object Tools extends js.Object {
   def random(min: Int, max: UndefOr[Int]): Float = js.native
 
   // from min to (and including) max
-  def randomInt(min: Int, max: UndefOr[Int]): Int = js.native
+  def randomInt(min: Int, max: Int): Int = js.native
+
+  def randomInt(min: Int): Int = js.native
 
   def normalize(v: Float, min: Int, max: Int): Float = js.native
 
@@ -48,7 +50,7 @@ object Tools extends js.Object {
 
 
 
-  def randomizeRGB(base: String, range:Int): String = js.native
+  def randomizeRGB(base: String, range:UndefOr[Int] = js.undefined): Double = js.native
 
   def getJSON(config: js.Object): String = js.native
 }

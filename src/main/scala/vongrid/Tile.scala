@@ -13,8 +13,7 @@ import scala.scalajs.js.annotation.JSName
 @js.native
 @JSName("vg.Tile")
 class Tile(config: TileConfig) extends js.Object {
-  var buttons = new Object3D
-  var cell: Cell = js.native
+  protected var cell: Cell = js.native
   var uniqueID: String = js.native
   var geometry: ExtrudeGeometry = js.native
   var material: MeshPhongMaterial = js.native

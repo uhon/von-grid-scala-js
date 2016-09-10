@@ -16,8 +16,8 @@ import js.{UndefOr, undefined, |}
 trait TileConfig extends js.Object
 object TileConfig extends TileConfigBuilder(noOpts)
 class TileConfigBuilder(val dict:OptMap) extends JSOptionBuilder[TileConfig, TileConfigBuilder](new TileConfigBuilder(_)) {
- def size(v: Float) = jsOpt("size", v)
- def scale(v: Float) = jsOpt("scale", v)
+ def size(v: Double) = jsOpt("size", v)
+ def scale(v: Double) = jsOpt("scale", v)
  def cell(v: Cell) = jsOpt("cell", v)
  def geometry(v: ExtrudeGeometry) = jsOpt("geometry", v)
  def material(v: Material) = jsOpt("material", v)
