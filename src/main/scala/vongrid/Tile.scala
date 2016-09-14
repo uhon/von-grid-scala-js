@@ -16,7 +16,7 @@ class Tile(config: TileConfig) extends js.Object {
   protected var cell: Cell = js.native
   var uniqueID: String = js.native
   var geometry: ExtrudeGeometry = js.native
-  var material: MeshPhongMaterial = js.native
+  var material: Material = js.native
   var objectType = TILE
   var entity: BoardSprite = js.native
 

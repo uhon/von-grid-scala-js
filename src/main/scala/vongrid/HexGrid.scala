@@ -76,7 +76,7 @@ class HexGrid(config: HexGridConfig) extends js.Object {
   @JSName("generate")
   def generate(config: SimpleTileGenConfig): js.Any = js.native
 
-  def generateOverlay(size: Float, overlayObj: Object3D, overlayMat: LineMaterial): js.Any = js.native
+  def generateOverlay(size: Float, overlayObj: Object3D, overlayMat: Material): js.Any = js.native
 
   def add(cell: Cell): UndefOr[Cell] = js.native
 
