@@ -2,9 +2,11 @@ package vongrid.utils
 
 import org.denigma.threejs.{DirectionalLight, _}
 import org.denigma.threejs
+import org.denigma.threejs.extras.OrbitControls
 import org.scalajs.dom._
 import org.scalajs.dom.raw.HTMLElement
 import vongrid.config.{ControlConfig, SceneConfig}
+import vongrid.controls.OrbitControlsPort
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
@@ -16,8 +18,9 @@ import scala.scalajs.js.annotation.JSName
 @JSName("vg.Scene")
 class Scene() extends js.Object {
   def this(sceneConfig: SceneConfig, controlConfig: ControlConfig) = this()
-  def this(sceneConfig: SceneConfig, controlled: Boolean) = this()
+  def this(sceneConfig: SceneConfig, controlConfig: Boolean) = this()
 
+  var controls: OrbitControlsPort = js.native
   val renderer: WebGLRenderer = js.native
   var width: Int = js.native
   var height: Int = js.native

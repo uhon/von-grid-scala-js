@@ -16,6 +16,6 @@ object ControlConfig extends ControlConfigBuilder(noOpts)
 class ControlConfigBuilder(val dict:OptMap) extends JSOptionBuilder[ControlConfig, ControlConfigBuilder](new ControlConfigBuilder(_)) {
     def minDistance(v: Int) = jsOpt("minDistance", v)
     def maxDistance(v: Int) = jsOpt("maxDistance", v)
-    def zoomSpeed(v: Int) = jsOpt("zoomSpeed", v)
+    def zoomSpeed(v: Double) = jsOpt("zoomSpeed", v)
     def noZoom(v: Boolean) = jsOpt("noZoom", v)
 }
