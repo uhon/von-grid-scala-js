@@ -21,13 +21,27 @@ object Mouse {
   val RIGHT = 2
 }
 
-trait MouseButtons {
-  var ORBIT = Mouse.LEFT
-  var ZOOM = Mouse.MIDDLE
-  var PAN = Mouse.RIGHT
+trait MouseControls {
+  val ORBIT = Mouse.LEFT
+  val ZOOM = Mouse.MIDDLE
+  val PAN = Mouse.RIGHT
 }
 
-object DefaultMouseButtons extends MouseButtons
+object Fingers {
+  val ONE = 1
+  val TWO = 2
+  val THREE = 3
+}
+
+trait TouchControls {
+  val ORBIT = Fingers.ONE
+  val ZOOM = Fingers.TWO
+  val PAN = Fingers.THREE
+}
+
+
+object DefaultMouseControls extends MouseControls
+object DefaultTouchControls extends TouchControls
 
 object State {
   var NONE = -1
@@ -44,7 +58,7 @@ object State {
   */
 @ScalaJSDefined
 @JSName("THREE.OrbitControlsPort")
-class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseButtons: MouseButtons = DefaultMouseButtons) extends EventDispatcher {
+class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: MouseControls = DefaultMouseControls, touchControl: TouchControls = DefaultTouchControls) extends EventDispatcher {
   var domElement = element
   // Set to false to disable this control
   var enabled = true
@@ -119,7 +133,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseButtons: Mous
       case c: OrthographicCamera => c.zoom = zoom0; c.updateProjectionMatrix
       case _ =>
     }
-    console.log("dispatchEvent", changeEvent)
+//    console.log("dispatchEvent", changeEvent)
     dispatchEvent(changeEvent)
     update
     state = STATE.NONE
@@ -499,15 +513,15 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseButtons: Mous
   def onMouseDown(event: MouseEvent): Unit = {
     if (!enabled) return
     event.preventDefault
-    if (event.button == mouseButtons.ORBIT) {
+    if (event.button == mouseControls.ORBIT) {
       if (!enableRotate) return
       handleMouseDownRotate(event)
       state = STATE.ROTATE
-    } else if (event.button == mouseButtons.ZOOM) {
+    } else if (event.button == mouseControls.ZOOM) {
       if (!enableZoom) return
       handleMouseDownDolly(event)
       state = STATE.DOLLY
-    } else if (event.button == mouseButtons.PAN) {
+    } else if (event.button == mouseControls.PAN) {
       if (!enablePan) return
       handleMouseDownPan(event)
       state = STATE.PAN
@@ -515,7 +529,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseButtons: Mous
     if (state != STATE.NONE) {
       document.addEventListener("mousemove", (onMouseMove _).asInstanceOf[Function[Event, _]], false)
       document.addEventListener("mouseup", (onMouseUp _).asInstanceOf[Function[Event, _]], false)
-      console.log("dispatchEvent", startEvent)
+//      console.log("dispatchEvent", startEvent)
       dispatchEvent(startEvent)
     }
   }
@@ -535,7 +549,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseButtons: Mous
       handleMouseMovePan(event)
     }
     if (state != STATE.NONE) {
-      console.log("dispatchEvent", changeEvent)
+//      console.log("dispatchEvent", changeEvent)
       dispatchEvent(changeEvent)
     }
   }
@@ -546,7 +560,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseButtons: Mous
     handleMouseUp(event)
     document.removeEventListener("mousemove", (onMouseMove _).asInstanceOf[Function[Event, _]], false)
     document.removeEventListener("mouseup", (onMouseUp _).asInstanceOf[Function[Event, _]], false)
-    console.log("dispatchEvent", endEvent)
+//    console.log("dispatchEvent", endEvent)
     dispatchEvent(endEvent)
     state = STATE.NONE
   }
@@ -558,9 +572,9 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseButtons: Mous
     event.stopPropagation
     handleMouseWheel(event)
     // not sure why these are here...
-    console.log("dispatchEvent", startEvent)
+//    console.log("dispatchEvent", startEvent)
     dispatchEvent(startEvent)
-    console.log("dispatchEvent", endEvent)
+//    console.log("dispatchEvent", endEvent)
     dispatchEvent(endEvent)
   }
 
@@ -575,19 +589,19 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseButtons: Mous
   def onTouchStart(event: TouchEvent): Unit = {
     if (enabled == false) return
     event.touches.length match {
-      case 1 => {
+      case touchControl.ORBIT => {
         // one-fingered touch: rotate
         if (enableRotate == false) return
         handleTouchStartRotate(event)
         state = STATE.TOUCH_ROTATE
       }
-      case 2 => {
+      case touchControl.ZOOM => {
         // two-fingered touch: dolly
         if (enableZoom == false) return
         handleTouchStartDolly(event)
         state = STATE.TOUCH_DOLLY
       }
-      case 3 => {
+      case touchControl.PAN => {
         // three-fingered touch: pan
         if (enablePan == false) return
         handleTouchStartPan(event)
@@ -596,7 +610,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseButtons: Mous
       case _ => state = STATE.NONE
     }
     if (state != STATE.NONE) {
-      console.log("dispatchEvent", startEvent)
+//      console.log("dispatchEvent", startEvent)
       dispatchEvent(startEvent)
     }
   }
@@ -607,19 +621,19 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseButtons: Mous
     event.preventDefault
     event.stopPropagation
     event.touches.length match {
-      case 1 => {
+      case touchControl.ORBIT => {
         // one-fingered touch: rotate
         if (enableRotate == false) return
         if (state != STATE.TOUCH_ROTATE) return // is this needed?...
         handleTouchMoveRotate(event)
       }
-      case 2 => {
+      case touchControl.ZOOM => {
         // two-fingered touch: dolly
         if (enableZoom == false) return
         if (state != STATE.TOUCH_DOLLY) return // is this needed?...
         handleTouchMoveDolly(event)
       }
-      case 3 => {
+      case touchControl.PAN => {
         // three-fingered touch: pan
         if (enablePan == false) return
         if (state != STATE.TOUCH_PAN) return // is this needed?...
@@ -632,7 +646,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseButtons: Mous
   def onTouchEnd(event: TouchEvent): Unit = {
     if (enabled == false) return
     handleTouchEnd(event)
-    console.log("dispatchEvent", endEvent)
+//    console.log("dispatchEvent", endEvent)
     dispatchEvent(endEvent)
     state = STATE.NONE
   }
