@@ -2,10 +2,13 @@
 
 Scala-js facades for awesome [von-grid - 3D hex tile system](https://github.com/vonWolfehaus/von-grid/)
 
-## State of Development
+## Features
 
-- Implemented facades, initial commit (untested)
-- Square-Grid not implemented yet
+- Extendable JS-Facades for von-grid classes
+- OrbitControls-Port in Scala. fully extensible
+
+## TODO
+- Square-Grid not implemented
 
 ## Usage
 
