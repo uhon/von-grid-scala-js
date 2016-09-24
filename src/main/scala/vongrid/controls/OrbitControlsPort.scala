@@ -1,8 +1,11 @@
 package vongrid.controls
 
+import org.querki.jquery._
 import org.denigma.threejs.{EventDispatcher, PerspectiveCamera, _}
 import org.scalajs.dom._
 import org.scalajs.dom.raw.{Event, HTMLElement}
+
+import scala.collection.mutable
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.{global => g, literal => l}
 import scala.scalajs.js.annotation.{JSName, ScalaJSDefined}
@@ -212,6 +215,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
     document.removeEventListener("mousemove", (onMouseMove _).asInstanceOf[Function[Event, _]], false)
     document.removeEventListener("mouseup", (onMouseUp _).asInstanceOf[Function[Event, _]], false)
     window.removeEventListener("keydown", (onKeyDown _).asInstanceOf[Function[Event, _]], false)
+    window.removeEventListener("keyup", (onKeyUp _).asInstanceOf[Function[Event, _]], false)
     //dispatchEvent( { type: "dispose" } ) // should this be added here?
   }
 
@@ -421,23 +425,30 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
   }
 
 
-  def handleKeyDown(event: KeyboardEvent) = {
+  var activeKeys = List[Int]()
+
+  def handleKeyDown(event: JQueryEventObject) = {
+    activeKeys = (event.which :: activeKeys).distinct
     //console.log( "handleKeyDown" )
-    if (event.keyCode == 38) {
-      pan()(0, keyPanSpeed)
-      update
-    } else if (event.keyCode == 40) {
-      pan()(0, -keyPanSpeed)
-      update
-    } else if (event.keyCode == 37) {
-      pan()(keyPanSpeed, 0)
-      update
-    } else if (event.keyCode == 39) {
-      pan()(-keyPanSpeed, 0)
+
+    var y, x = 0d
+
+    y = y + activeKeys.find(_ == 38).map(_ => keyPanSpeed).getOrElse(0d)
+    y = y + activeKeys.find(_ == 40).map(_ => -keyPanSpeed).getOrElse(0d)
+    x = x + activeKeys.find(_ == 37).map(_ => keyPanSpeed).getOrElse(0d)
+    x = x + activeKeys.find(_ == 39).map(_ => -keyPanSpeed).getOrElse(0d)
+
+    if (x != 0 || y != 0) {
+      pan()(x, y)
       update
     }
   }
 
+  def handleKeyUp(event: KeyboardEvent) = {
+    console.log("active keys", activeKeys.mkString(","))
+    activeKeys = activeKeys.filterNot(_ == event.keyCode)
+    console.log("active keys", activeKeys.mkString(","))
+  }
 
   def handleTouchStartRotate(event: TouchEvent) = {
     //console.log( "handleTouchStartRotate" )
@@ -579,11 +590,18 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
   }
 
 
-  def onKeyDown(event: KeyboardEvent): Unit = {
-    if (enabled == false || enableKeys == false || enablePan == false) return
+  def onKeyDown(event: JQueryEventObject): Unit = {
+    if (!enabled || !enableKeys || !enablePan) return
     handleKeyDown(event)
     dispatchEvent(changeEvent)
   }
+
+  def onKeyUp(event: KeyboardEvent): Unit = {
+    if (!enabled || !enableKeys || !enablePan) return
+    handleKeyUp(event)
+    dispatchEvent(endEvent)
+  }
+
 
 
   def onTouchStart(event: TouchEvent): Unit = {
@@ -641,14 +659,15 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
       }
       case _ => state = STATE.NONE
     }
+    dispatchEvent(changeEvent)
   }
 
   def onTouchEnd(event: TouchEvent): Unit = {
     if (enabled == false) return
     handleTouchEnd(event)
 //    console.log("dispatchEvent", endEvent)
-    dispatchEvent(endEvent)
     state = STATE.NONE
+    dispatchEvent(endEvent)
   }
 
 
@@ -663,11 +682,11 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
   domElement.addEventListener("touchstart", (onTouchStart _).asInstanceOf[Function[Event, _]], false)
   domElement.addEventListener("touchend", (onTouchEnd _).asInstanceOf[Function[Event, _]], false)
   domElement.addEventListener("touchmove", (onTouchMove _).asInstanceOf[Function[Event, _]], false)
-  window.addEventListener("keydown", (onKeyDown _).asInstanceOf[Function[Event, _]], false)
+  // TODO: Handle KeyDown with Jquery (attempt to work around missing keydown event when second arrow
+  // key is released, Chrome specific? Firefox works)
+  $(window).keydown(onKeyDown _)
+//  window.addEventListener("keydown", (onKeyDown _).asInstanceOf[Function[Event, _]], false)
+  window.addEventListener("keyup", (onKeyUp _).asInstanceOf[Function[Event, _]], false)
   // force an update at start
   update
-  //  OrbitControls.prototype = camera.create( EventDispatcher.prototype )
-  //  OrbitControls.prototype.constructor = OrbitControls
-  //
-  //  camera.defineProperties( OrbitControls.prototype, {
 }
