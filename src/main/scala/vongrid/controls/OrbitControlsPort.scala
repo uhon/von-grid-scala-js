@@ -3,6 +3,7 @@ package vongrid.controls
 import org.querki.jquery._
 import org.denigma.threejs.{EventDispatcher, PerspectiveCamera, _}
 import org.scalajs.dom._
+import org.scalajs.dom.experimental.PointerLock
 import org.scalajs.dom.raw.{Event, HTMLElement}
 
 import scala.collection.mutable
@@ -104,9 +105,23 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
   // If auto-rotate is enabled, you must call controls.update() in your animation loop
   var autoRotate = false
   var autoRotateSpeed = 2.0d
+
   // 30 seconds per round when fps is 60
   // Set to false to disable use of the keys
   var enableKeys = true
+  // momentum
+  var zoomDampingFactor = 0.2
+
+  var enableMomentum = false
+  var momentumDampingFactor = 0.1 // duration of momentum - higher number => shorter
+  var momentumScalingFactor = 0.2 // distance covered - higher number => further
+  var momentumLeft = 0d
+  var momentumUp = 0d
+  var momentumPanVector = new Vector3(0, 0, 0)
+  var momentumOn = false
+
+
+
   // for reset
   var target0 = target.clone
   var position0 = camera.position.clone
@@ -142,14 +157,51 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
     state = STATE.NONE
   }
 
+  def momentum: Unit = {
+    if(!enableMomentum || !momentumOn) return
+
+    if(Math.abs(momentumUp + momentumLeft) < 10e-5) { momentumOn = false; return }
+
+//    console.log(
+//      "momentum before",
+//      momentumLeft,
+//      momentumUp
+//    )
+    if(momentumUp > 101) momentumUp = 101
+    if(momentumUp < -101) momentumUp = -101
+    if(momentumLeft > 101) momentumLeft = 101
+    if(momentumLeft < -101) momentumLeft = -101
+    momentumUp -= momentumUp * momentumDampingFactor
+    momentumLeft -= momentumLeft * momentumDampingFactor
+
+//    console.log(
+//      "momentum after",
+//      momentumLeft,
+//      momentumUp
+//    )
+
+    val scaling = momentumScalingFactor
+//    val scaling = momentumScalingFactor + camera.position.z / 100
+    console.log("scaling", scaling)
+
+    momentumPanVector.set(
+      -momentumLeft * scaling,
+      0,
+      -momentumUp * scaling
+    )
+    dispatchEvent(changeEvent)
+
+  }
+
   // this method is exposed, but perhaps it would be better if we can make it private...
-
-
   def update: () => Boolean = {
     //    console.log("update")
     var offset = new Vector3
     // so camera.up is the orbit axis
     var quat = new Quaternion().setFromUnitVectors(camera.up, new Vector3(0, 1, 0))
+
+    momentum
+
     var quatInverse = quat.clone().inverse
     var lastPosition = new Vector3
     var lastQuaternion = new Quaternion
@@ -165,6 +217,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
       }
       spherical.theta += sphericalDelta.theta
       spherical.phi += sphericalDelta.phi
+
       // restrict theta to be between desired limits
       spherical.theta = Math.max(minAzimuthAngle, Math.min(maxAzimuthAngle, spherical.theta))
       // restrict phi to be between desired limits
@@ -187,7 +240,12 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
         sphericalDelta.set(0, 0, 0)
       }
       scale = 1
-      panOffset.set(0, 0, 0)
+      if (momentumOn) {
+        panOffset.setX(momentumPanVector.x)
+        panOffset.setZ(momentumPanVector.z)
+      } else {
+        panOffset.set(0, 0, 0)
+      }
       // update condition is:
       // min(camera displacement, camera rotation in radians)^2 > EPS
       // using small-angle approximation cos(x/2) = 1 - x^2 / 8
@@ -244,25 +302,13 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
   var dollyEnd = new Vector2
   var dollyDelta = new Vector2
 
-  private
+  private def getAutoRotationAngle = 2 * Math.PI / 60 / 60 * autoRotateSpeed
 
+  private def getZoomScale = Math.pow(0.95, zoomSpeed)
 
-  def getAutoRotationAngle = 2 * Math.PI / 60 / 60 * autoRotateSpeed
+  private def rotateLeft(angle: Double) = { sphericalDelta.theta -= angle; /*sphericalDelta.theta -= angle*/ }
 
-  private
-
-
-  def getZoomScale = Math.pow(0.95, zoomSpeed)
-
-  private
-
-
-  def rotateLeft(angle: Double) = sphericalDelta.theta -= angle
-
-  private
-
-
-  def rotateUp(angle: Double) = sphericalDelta.phi -= angle
+  private def rotateUp(angle: Double) = { sphericalDelta.phi -= angle; /*sphericalDelta.phi -= angle*/ }
 
 
   def panLeft() = {
@@ -278,9 +324,10 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
   def panUp() = {
     var v = new Vector3
     (distance: Double, objectMatrix: Matrix4) => {
-      v.setFromMatrixColumn(objectMatrix, 1) // get Y column of objectMatrix
+      v.setFromMatrixColumn(objectMatrix, 1) // get z column of objectMatrix
       v.multiplyScalar(distance)
       panOffset.add(v)
+      panOffset.setY(0)
     }
   }
 
@@ -375,6 +422,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
     //console.log( "handleMouseMoveRotate" )
     rotateEnd.set(event.clientX, event.clientY)
     rotateDelta.subVectors(rotateEnd, rotateStart)
+
     var element = if (domElement == document) document.body else domElement
     // rotating across whole screen goes 360 degrees around
     rotateLeft(2 * Math.PI * rotateDelta.x / element.clientWidth * rotateSpeed)
@@ -406,11 +454,19 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
     pan()(panDelta.x, panDelta.y)
     panStart.copy(panEnd)
     update
+
+    val lock = PointerLock.toPointerLockMouseEvent(event)
+
+    momentumLeft = lock.movementX * Math.cos(camera.rotation.z) + lock.movementY * Math.sin(camera.rotation.z)
+    momentumUp = lock.movementY * Math.cos(camera.rotation.z) - lock.movementX * Math.sin(camera.rotation.z)
+//    console.log(momentumLeft, momentumUp)
   }
 
 
   def handleMouseUp(event: MouseEvent) = {
+
     //console.log( "handleMouseUp" )
+    momentumOn = true
   }
 
 
@@ -445,9 +501,9 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
   }
 
   def handleKeyUp(event: KeyboardEvent) = {
-    console.log("active keys", activeKeys.mkString(","))
+//    console.log("active keys", activeKeys.mkString(","))
     activeKeys = activeKeys.filterNot(_ == event.keyCode)
-    console.log("active keys", activeKeys.mkString(","))
+//    console.log("active keys", activeKeys.mkString(","))
   }
 
   def handleTouchStartRotate(event: TouchEvent) = {
@@ -503,9 +559,12 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
 
 
   def handleTouchMovePan(event: TouchEvent) = {
+
     //console.log( "handleTouchMovePan" )
     panEnd.set(event.touches(0).pageX, event.touches(0).pageY)
     panDelta.subVectors(panEnd, panStart)
+    momentumLeft = panDelta.x * Math.cos(camera.rotation.z) + panDelta.y * Math.sin(camera.rotation.z)
+    momentumUp = panDelta.y * Math.cos(camera.rotation.z) - panDelta.x * Math.sin(camera.rotation.z)
     pan()(panDelta.x, panDelta.y)
     panStart.copy(panEnd)
     update
@@ -522,6 +581,9 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
 
 
   def onMouseDown(event: MouseEvent): Unit = {
+    momentumOn = false
+    momentumLeft = 0d
+    momentumUp = 0d
     if (!enabled) return
     event.preventDefault
     if (event.button == mouseControls.ORBIT) {
@@ -605,6 +667,9 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
 
 
   def onTouchStart(event: TouchEvent): Unit = {
+    momentumOn = false
+    momentumLeft = 0d
+    momentumUp = 0d
     if (enabled == false) return
     event.touches.length match {
       case touchControl.ORBIT => {
@@ -663,6 +728,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
   }
 
   def onTouchEnd(event: TouchEvent): Unit = {
+    momentumOn = true
     if (enabled == false) return
     handleTouchEnd(event)
 //    console.log("dispatchEvent", endEvent)
