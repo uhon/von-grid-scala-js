@@ -182,7 +182,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
 
     val scaling = momentumScalingFactor
 //    val scaling = momentumScalingFactor + camera.position.z / 100
-    console.log("scaling", scaling)
+//    console.log("scaling", scaling)
 
     momentumPanVector.set(
       -momentumLeft * scaling,
