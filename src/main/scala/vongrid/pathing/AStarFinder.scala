@@ -5,13 +5,13 @@ import vongrid.lib.LinkedList
 import vongrid.{Cell, HexGrid}
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation.{JSName, JSGlobal}
 
 /**
   * Created by uhon on 27/03/16.
   */
 @js.native
-@JSName("vg.AStarFinder")
+@JSGlobal("vg.AStarFinder")
 class AStarFinder(finderConfig: js.UndefOr[AStarFinderConfig]) extends js.Object {
   var allowDiagonal: Boolean = js.native
   var heuristicFilter: Function[Cell, Cell] = js.native

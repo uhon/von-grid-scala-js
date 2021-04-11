@@ -4,13 +4,15 @@ import org.denigma.threejs._
 import vongrid.{Board, Tile}
 import vongrid.utils.Tools
 
-import scala.scalajs.js.annotation.ScalaJSDefined
+import scala.scalajs.js.annotation.JSExportTopLevel
+
+
 
  /**
   * Sprite as it is understud by vg
   */
-@ScalaJSDefined
-trait BoardSprite extends Sprite {
+@JSExportTopLevel("BoardSprite")
+abstract class BoardSprite extends Sprite {
   var board: Board
   var geo: BufferGeometry
   var url: String

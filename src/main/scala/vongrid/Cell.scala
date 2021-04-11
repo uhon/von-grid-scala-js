@@ -3,7 +3,7 @@ package vongrid
 import org.denigma.threejs.Vector3
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation.{JSName, JSGlobal}
 import vongrid.AbstractCell
 /**
   * @author Urs Honegger &ltu.honegger@insign.ch&gt
@@ -15,7 +15,7 @@ trait NodeObject {
 
 
 @js.native
-@JSName("vg.Cell")
+@JSGlobal("vg.Cell")
 class Cell(var q: Double, var r: Double, var s: Double, var h: Double = 0) extends js.Object {
 
   // optional link to the visual representation's class instance

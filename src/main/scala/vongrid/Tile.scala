@@ -5,19 +5,19 @@ import vongrid.config.TileConfig
 import vongrid.rendering.BoardSprite
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation.{JSName, JSGlobal}
 
 /**
   * @author Urs Honegger &lt;u.honegger@insign.ch&gt;
   */
 @js.native
-@JSName("vg.Tile")
+@JSGlobal("vg.Tile")
 class Tile(config: TileConfig) extends js.Object {
   protected var cell: Cell = js.native
   var uniqueID: String = js.native
   var geometry: ExtrudeGeometry = js.native
   var material: Material = js.native
-  var objectType = TILE
+  var objectType = js.native
   var entity: BoardSprite = js.native
 
   // populate with any extra data needed in your game

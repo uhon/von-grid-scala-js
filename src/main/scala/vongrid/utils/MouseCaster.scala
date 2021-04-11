@@ -7,13 +7,13 @@ import vongrid.lib.Signal
 
 import scala.scalajs.js
 import scala.scalajs.js.UndefOr
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation.{JSName, JSGlobal}
 
 /**
   * Created by uhon on 27/03/16.
   */
 @js.native
-@JSName("vg.MouseCaster")
+@JSGlobal("vg.MouseCaster")
 class MouseCaster(group: Object3D, camera: Camera, element: UndefOr[HTMLElement] = js.native) extends js.Object {
   var down: Boolean = js.native // left click
   var rightDown: Boolean = js.native

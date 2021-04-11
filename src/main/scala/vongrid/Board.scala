@@ -5,20 +5,20 @@ import vongrid.config.{AStarFinderConfig, AbstractSprite, TileGenConfig}
 import vongrid.pathing.AStarFinder
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation.{JSName, JSGlobal}
 
 /**
   * Created by uhon on 27/03/16.
   */
 @js.native
-@JSName("vg.Board")
+@JSGlobal("vg.Board")
 class Board(grid: HexGrid, finderConfig: js.UndefOr[AStarFinderConfig] = js.undefined) extends js.Object {
   var tiles: js.Array[Tile] = js.native
   var tileGroup: Object3D = js.native// only for tiles
   var group: Object3D = js.native // can hold all entities, also holds tileGroup, never trashed
   var overlay: Object3D = js.native
 
-  val finder = new AStarFinder(finderConfig)
+  val finder: AStarFinder = js.native
 
   def setEntityOnTile(entity: Sprite, tile: Tile): js.Any = js.native
   def addTile(tile: Tile): js.Any = js.native

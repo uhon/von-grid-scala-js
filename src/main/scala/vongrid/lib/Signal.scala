@@ -1,13 +1,13 @@
 package vongrid.lib
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation.{JSName, JSGlobal}
 
 /**
   * Created by uhon on 27/03/16.
   */
 @js.native
-@JSName("vg.Signal")
+@JSGlobal("vg.Signal")
 class Signal extends js.Object {
   /**
     * If Signal should keep record of previously dispatched parameters and

@@ -9,13 +9,13 @@ import vongrid.config.{ControlConfig, SceneConfig}
 import vongrid.controls.OrbitControlsPort
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation.{JSName, JSGlobal}
 
 /**
   * Created by uhon on 27/03/16.
   */
 @js.native
-@JSName("vg.Scene")
+@JSGlobal("vg.Scene")
 class Scene() extends js.Object {
   def this(sceneConfig: SceneConfig, controlConfig: ControlConfig) = this()
   def this(sceneConfig: SceneConfig, controlConfig: Boolean) = this()

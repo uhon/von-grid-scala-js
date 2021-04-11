@@ -9,7 +9,7 @@ import org.scalajs.dom.raw.{Event, HTMLElement}
 import scala.collection.mutable
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.{global => g, literal => l}
-import scala.scalajs.js.annotation.{JSName, ScalaJSDefined}
+import scala.scalajs.js.annotation.{JSExportTopLevel, JSName}
 
 object Keys extends Enumeration {
   type Keys = Value
@@ -60,8 +60,7 @@ object State {
 /**
   * @author Urs Honegger &ltu.honegger@insign.ch&gt
   */
-@ScalaJSDefined
-@JSName("THREE.OrbitControlsPort")
+//@JSExportTopLevel("THREE.OrbitControlsPort")
 class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: MouseControls = DefaultMouseControls, touchControl: TouchControls = DefaultTouchControls) extends EventDispatcher {
   var domElement = element
   // Set to false to disable this control
@@ -207,6 +206,7 @@ class OrbitControlsPort(camera: Camera, element: HTMLElement, mouseControls: Mou
     var lastQuaternion = new Quaternion
     () => {
       var position = camera.position
+      console.log("camera position", position)
       offset.copy(position).sub(target)
       // rotate offset to "y-axis-is-up" space
       offset.applyQuaternion(quat)
